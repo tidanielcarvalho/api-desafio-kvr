@@ -57,33 +57,6 @@ func returnMockProtoModelToMonitorVotes() proto.MonitorVotesReq {
 	}
 }
 
-func returnMockProtoModelToListAllCryptos() *proto.ListCryptosResp {
-	cryptos := []*proto.CryptoCurrency{
-		{
-			Id:        primitive.NewObjectID().Hex(),
-			Name:      "test name 2",
-			AssetId:   "tn2",
-			PriceUsd:  2.5,
-			Votes:     int32(10),
-			CreatedAt: time.Now().Format("2006-01-02T15:04:05.999Z"),
-			UpdatedAt: time.Now().Format("2006-01-02T15:04:05.999Z"),
-		},
-		{
-			Id:        primitive.NewObjectID().Hex(),
-			Name:      "test name 1",
-			AssetId:   "tn1",
-			PriceUsd:  1.5,
-			Votes:     int32(5),
-			CreatedAt: time.Now().Format("2006-01-02T15:04:05.999Z"),
-			UpdatedAt: time.Now().Format("2006-01-02T15:04:05.999Z"),
-		},
-	}
-
-	list := proto.ListCryptosResp{}
-	list.Crypto = cryptos
-	return &list
-}
-
 func returnMockProtoModelToSortCryptos() proto.SortCryptosReq {
 	return proto.SortCryptosReq{
 		FieldSort: "name",

@@ -1,0 +1,68 @@
+syntax = "proto3";
+
+package proto;
+option go_package = "api-desafio-kvr/proto";
+
+service EndPointCryptos {
+  rpc CreateCrypto(CreateCryptoReq) returns (CryptoCurrency) {}
+  rpc EditCrypto(EditCryptoReq) returns (CryptoCurrency) {}
+  rpc DeleteCrypo(DeleteCryptoReq) returns (DefaultResp) {}
+  rpc FindCrypto(FindCryptoReq) returns (CryptoCurrency) {}
+  rpc ListAllCryptos(SortCryptosReq) returns (ListCryptosResp) {}
+  rpc Upvote(VoteReq) returns (DefaultResp) {}
+  rpc Downvote(VoteReq) returns (DefaultResp) {}
+  rpc MonitorVotes(MonitorVotesReq) returns (stream CryptoCurrency) {}
+}
+
+message DefaultResp{
+  string id = 1;
+  string message = 2;
+}
+
+message CreateCryptoReq {
+  string name = 1;
+  string asset_id = 2;
+  double price_usd = 3;
+}
+
+message CryptoCurrency {
+    string id = 1;
+    string name = 2;
+    string asset_id = 3;
+    double price_usd = 4;
+    int32 votes = 5;
+    string created_at = 6;
+    string updated_at = 7;
+}
+
+message EditCryptoReq {
+  string id = 1;
+  string name = 2;
+  string asset_id = 3;
+  double price_usd = 4;
+}
+
+message DeleteCryptoReq {
+  string id = 1;
+}
+
+message FindCryptoReq {
+  string id = 1;
+}
+
+message ListCryptosResp {
+    repeated CryptoCurrency crypto = 1;
+}
+
+message VoteReq {
+    string id = 1;
+}
+
+message SortCryptosReq {
+  string fieldSort = 1;
+  bool orderBy = 2;
+}
+
+message MonitorVotesReq {
+    string id = 1;
+}

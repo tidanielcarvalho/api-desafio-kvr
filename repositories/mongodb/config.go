@@ -6,7 +6,6 @@ import (
 	"os"
 	"time"
 
-	"github.com/joho/godotenv"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -14,10 +13,10 @@ import (
 var logger = &helpers.Log{}
 
 func InitializeConnection() string {
-	err := godotenv.Load()
-	if err != nil {
-		panic(err)
-	}
+	// err := godotenv.Load()
+	// if err != nil {
+	// 	panic(err)
+	// }
 
 	URI := "mongodb+srv://" + os.Getenv("MONGODB_USER") + ":" + os.Getenv("MONGODB_PASS") + "@clusterapi.t6vp0.mongodb.net/?retryWrites=true&w=majority"
 	//URI := "mongodb://root:root@127.0.0.1:27017/?authSource=admin"

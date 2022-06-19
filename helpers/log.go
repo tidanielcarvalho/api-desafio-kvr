@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"os"
 	"time"
-
-	"github.com/joho/godotenv"
 )
 
 type Log struct{}
@@ -19,14 +17,14 @@ func isId(id string) string {
 }
 
 func (l *Log) Debug(id string, str string) {
-	forTestingErr := godotenv.Load("../.env")
-	if forTestingErr != nil {
-		// retry
-		err := godotenv.Load()
-		if err != nil {
-			panic(err)
-		}
-	}
+	// forTestingErr := godotenv.Load("../.env")
+	// if forTestingErr != nil {
+	// 	// retry
+	// 	err := godotenv.Load()
+	// 	if err != nil {
+	// 		panic(err)
+	// 	}
+	// }
 
 	if os.Getenv("LOG_DEBUG") == "enable" {
 		fmt.Println("[" + time.Now().Format("2006-01-02 15:04:05.000") + "][DEBUG]" + isId(id) + str)

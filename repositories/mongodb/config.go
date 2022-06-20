@@ -12,7 +12,7 @@ import (
 
 var logger = &helpers.Log{}
 
-func InitializeConnection() string {
+func getURI() string {
 	err := godotenv.Load()
 	if err != nil {
 		panic(err)
@@ -28,7 +28,7 @@ func InitializeConnection() string {
 
 func Connect() (*mongo.Client, context.Context, context.CancelFunc, error) {
 	logger.Info("", "Starting database connection")
-	URI := InitializeConnection()
+	URI := getURI()
 
 	serverAPIOptions := options.ServerAPI(options.ServerAPIVersion1)
 	clientOptions := options.Client().

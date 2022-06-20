@@ -187,7 +187,7 @@ func TestCreateCryptoWithError(t *testing.T) {
 	defer cancel()
 }
 
-// Testing create crypto successfull
+// Testing create crypto successful
 func TestCreateCryptoWithSuccess(t *testing.T) {
 	server := AppServer{}
 	crypto := returnMockProtoModelCreateCrypto()
@@ -327,7 +327,7 @@ func TestEditCryptoWithGetByIdError(t *testing.T) {
 	defer cancel()
 }
 
-// Testing edit crypto successfull
+// Testing edit crypto successful
 func TestEditCryptoWithSuccess(t *testing.T) {
 	server := AppServer{}
 	crypto := returnMockProtoModelToEditCreateCrypto()
@@ -412,7 +412,7 @@ func TestDeleteCryptoWithDeleteByIdError(t *testing.T) {
 	defer cancel()
 }
 
-// Testing delete crypto successfull
+// Testing delete crypto successful
 func TestDeleteCryptoWithSuccess(t *testing.T) {
 	server := AppServer{}
 	crypto := returnMockProtoModelToDeleteCrypto()
@@ -426,7 +426,7 @@ func TestDeleteCryptoWithSuccess(t *testing.T) {
 
 	assert.Nil(t, err)
 	assert.Equal(t, crypto.Id, result.Id)
-	assert.Equal(t, "deleted successfull", result.Message)
+	assert.Equal(t, "deleted successful", result.Message)
 
 	defer cancel()
 }
@@ -482,7 +482,7 @@ func TestFindCryptoWithDeleteByIdError(t *testing.T) {
 	defer cancel()
 }
 
-// Testing find crypto successfull
+// Testing find crypto successful
 func TestFindCryptoWithSuccess(t *testing.T) {
 	server := AppServer{}
 	crypto := returnMockProtoModelToFindCrypto()
@@ -561,7 +561,7 @@ func TestListAllCryptosWithListAllEmpty(t *testing.T) {
 	defer cancel()
 }
 
-// Testing list all cryptos successfull
+// Testing list all cryptos successful
 func TestListAllCryptosWithSuccess(t *testing.T) {
 	server := AppServer{}
 	sortParams := returnMockProtoModelToSortCryptos()
@@ -656,7 +656,7 @@ func TestUpvoteWithUpdateCryptoMatchedCountZeroButGetByIdCryptoNotExist(t *testi
 	defer cancel()
 }
 
-// Testing upvote successfull
+// Testing upvote successful
 func TestUpvoteWithSuccess(t *testing.T) {
 	server := AppServer{}
 	crypto := returnMockProtoModelToVote()
@@ -758,7 +758,7 @@ func TestDownvoteWithVoteEqualZero(t *testing.T) {
 	defer cancel()
 }
 
-// Test upvote successfull
+// Testing upvote successful
 func TestDownvoteWithSuccess(t *testing.T) {
 	server := AppServer{}
 	crypto := returnMockProtoModelToVote()
@@ -847,7 +847,7 @@ func TestMonitorVotesWithGetByIdError(t *testing.T) {
 	assert.Equal(t, "rpc error: code = Internal desc = testing MonitorVotes with error in GetById", err.Error())
 }
 
-// Testing monitor votes successfull
+// Testing monitor votes successful
 func TestMonitorVotesWithSuccess(t *testing.T) {
 	server := AppServer{}
 
@@ -880,7 +880,7 @@ func TestMonitorVotesWithSuccess(t *testing.T) {
 
 	select {
 	case <-timeout:
-		logger.Info("TESTING", "Timeout successfull ")
+		logger.Info("TESTING", "Timeout successful ")
 	}
 
 	assert.Equal(t, 1, len(mockStream.Results))

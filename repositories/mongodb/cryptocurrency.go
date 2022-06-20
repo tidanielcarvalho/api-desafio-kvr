@@ -163,7 +163,7 @@ var OrderBy = func(sort repositories.SortParams) (string, int) {
 
 var selectField = func(field string) string {
 	switch field {
-	case "votes", "price_usd", "createdAt", "updatedAt":
+	case "votes", "price_usd":
 		return field
 	default:
 		return "name"

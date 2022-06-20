@@ -7,6 +7,7 @@ import (
 	"api-desafio-kvr/repositories/migration"
 	"api-desafio-kvr/repositories/mongodb"
 	"net"
+	"os"
 
 	"google.golang.org/grpc"
 )
@@ -14,32 +15,40 @@ import (
 var logger = &helpers.Log{}
 
 func main() {
+	logger.Info("", "Starting services to application")
 	client, ctx, cancel, _ := mongodb.Connect()
 
 	collection := mongodb.GetDataBase(client)
 	app := &controllers.AppServer{Database: collection}
 
 	migration.CreateInitialCryptosBulk(app.Database)
-	controllers.InitializeChanToStream()
-	InitializeGRPC(app)
+
+	controllers.StartChanToStream()
+	StartGRPC(app)
 
 	mongodb.Disconnect(client, ctx, cancel)
 }
 
-func InitializeGRPC(app *controllers.AppServer) {
-	logger.Info("", "Initializing gRPC service")
+func StartGRPC(app *controllers.AppServer) {
+	logger.Info("", "Starting gRPC service")
 
 	grpc := grpc.NewServer()
 	proto.RegisterEndPointCryptosServer(grpc, app)
 
-	port := "5000"
+	port := os.Getenv("PORT")
+	if port == "" {
+		logger.Warn("", "Env PORT is empty or not found")
+		port = "55555"
+	}
+
 	listener, err := net.Listen("tcp", ":"+port)
 	if err != nil {
-		panic(err.Error)
+		logger.Fatal("", err.Error(), err)
 	}
+
 	logger.Info("", "gRPC service running on the port "+port)
 	err = grpc.Serve(listener)
 	if err != nil {
-		panic(err.Error)
+		logger.Fatal("", err.Error(), err)
 	}
 }

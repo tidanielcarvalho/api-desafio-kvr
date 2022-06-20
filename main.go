@@ -10,6 +10,7 @@ import (
 	"os"
 
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/reflection"
 )
 
 var logger = &helpers.Log{}
@@ -34,6 +35,7 @@ func StartGRPC(app *controllers.AppServer) {
 
 	grpc := grpc.NewServer()
 	proto.RegisterEndPointCryptosServer(grpc, app)
+	reflection.Register(grpc)
 
 	port := os.Getenv("PORT")
 	if port == "" {

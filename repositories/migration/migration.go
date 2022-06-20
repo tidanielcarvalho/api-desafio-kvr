@@ -16,11 +16,11 @@ import (
 var logger = &helpers.Log{}
 
 func CreateInitialCryptosBulk(collection mongodb.IMCollection) {
-	result, _ := mongodb.CountDocuments(collection)
+	countDoc, _ := mongodb.CountDocuments(collection)
 
 	// if exists documents in collection
-	if result > 1 {
-		logger.Warn("", "Already exists "+strconv.FormatInt(result, 10)+" cryptos in collection "+mongodb.NameCollection())
+	if countDoc > 1 {
+		logger.Warn("", "Already exists "+strconv.FormatInt(countDoc, 10)+" cryptos in collection "+mongodb.NameCollection())
 		return
 	}
 

@@ -826,7 +826,7 @@ func TestMonitorVotesWithGetByIdError(t *testing.T) {
 	cryptoMonitor := returnMockProtoModelToMonitorVotes()
 	mockStream := Mock_EndPointCryptos_MonitorVotesServer{}
 
-	InitializeChanToStream()
+	StartChanToStream()
 	SetObserver = func(id string) {
 		observer <- cryptoMonitor.Id
 	}
@@ -855,7 +855,7 @@ func TestMonitorVotesWithSuccess(t *testing.T) {
 	cryptoMonitorSendToMonitor := returnMockProtoModelToMonitorVotes()
 	mockStream := Mock_EndPointCryptos_MonitorVotesServer{}
 
-	InitializeChanToStream()
+	StartChanToStream()
 	SetObserver = func(id string) {
 		observer <- cryptoMonitorSendToMonitor.Id
 	}

@@ -5,7 +5,7 @@ import (
 	"api-desafio-kvr/models"
 	"api-desafio-kvr/proto"
 	"api-desafio-kvr/repositories"
-	"api-desafio-kvr/repositories/mongodb"
+	db "api-desafio-kvr/repositories/mongodb"
 	"context"
 	"encoding/json"
 	"errors"
@@ -28,8 +28,8 @@ type AppServer struct {
 	Database *mongo.Collection
 }
 
-func InitializeChanToStream() {
-	logger.Info("", "Initializing channel for stream")
+func StartChanToStream() {
+	logger.Info("", "Starting channel for stream")
 	observer = make(chan string)
 }
 
@@ -53,7 +53,7 @@ func (a *AppServer) CreateCrypto(ctx context.Context, req *proto.CreateCryptoReq
 		PriceUsd: req.GetPriceUsd(),
 	}
 
-	insertedCrypto, err := mongodb.InsertCryptos(a.Database, cryptoDb)
+	insertedCrypto, err := db.InsertCryptos(a.Database, cryptoDb)
 	if err != nil {
 		logger.Error("", "Crypto not created "+req.String()+" error: "+err.Error())
 		return &cryptoResponse, status.Errorf(13, err.Error())
@@ -88,13 +88,13 @@ func (a *AppServer) EditCrypto(ctx context.Context, req *proto.EditCryptoReq) (*
 		UpdateType: models.UpdateOnly,
 	}
 
-	updatedCrypto, _, err := mongodb.UpdateCrypto(a.Database, cryptoUpdate)
+	updatedCrypto, _, err := db.UpdateCrypto(a.Database, cryptoUpdate)
 	if err != nil {
 		logger.Error("", "Crypto not edited "+req.String()+" error: "+err.Error())
 		return &cryptoResponse, status.Errorf(13, err.Error())
 	}
 
-	crypto, err := mongodb.GetById(a.Database, updatedCrypto.Id)
+	crypto, err := db.GetById(a.Database, updatedCrypto.Id)
 	if err != nil {
 		logger.Error("", "Crypto not find after update "+req.String()+" error: "+err.Error())
 		return &cryptoResponse, status.Errorf(5, err.Error())
@@ -120,7 +120,7 @@ func (a *AppServer) DeleteCrypo(ctx context.Context, req *proto.DeleteCryptoReq)
 	}
 
 	objId, _ := primitive.ObjectIDFromHex(req.GetId())
-	_, err = mongodb.DeleteById(a.Database, objId)
+	_, err = db.DeleteById(a.Database, objId)
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
 			logger.Error(req.GetId(), "Delete crypto error: "+err.Error())
@@ -148,7 +148,7 @@ func (a *AppServer) FindCrypto(ctx context.Context, req *proto.FindCryptoReq) (*
 	}
 
 	objId, _ := primitive.ObjectIDFromHex(req.GetId())
-	findResp, err := mongodb.GetById(a.Database, objId)
+	findResp, err := db.GetById(a.Database, objId)
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
 			logger.Error(req.GetId(), "Find crypto error: "+err.Error())
@@ -180,7 +180,7 @@ func (a *AppServer) ListAllCryptos(ctx context.Context, req *proto.SortCryptosRe
 		Field: req.GetFieldSort(),
 		Asc:   req.GetOrderBy(),
 	}
-	response, err := mongodb.ListAll(a.Database, sort)
+	response, err := db.ListAll(a.Database, sort)
 	if err != nil {
 		logger.Error("", "Cryptos not listed because error "+req.String()+" error: "+err.Error())
 		return &cryptoListResponse, status.Errorf(13, err.Error())
@@ -223,7 +223,7 @@ func (a *AppServer) Upvote(ctx context.Context, req *proto.VoteReq) (*proto.Defa
 		UpdateType: models.UpVote,
 	}
 
-	_, matchedCount, err := mongodb.UpdateCrypto(a.Database, crypto)
+	_, matchedCount, err := db.UpdateCrypto(a.Database, crypto)
 	if err != nil {
 		logger.Error(req.GetId(), "Crypto upvote error: "+err.Error())
 		return &responseMessage, status.Errorf(13, err.Error())
@@ -231,7 +231,7 @@ func (a *AppServer) Upvote(ctx context.Context, req *proto.VoteReq) (*proto.Defa
 
 	// if document not updated, verify if exist
 	if matchedCount == 0 {
-		_, errGet := mongodb.GetById(a.Database, crypto.Id)
+		_, errGet := db.GetById(a.Database, crypto.Id)
 		// Verifying reason to mathedCount == 0 maybe crypto not exists
 		if errGet != nil {
 			logger.Error(req.GetId(), "Upvote error: "+errGet.Error())
@@ -269,14 +269,14 @@ func (a *AppServer) Downvote(ctx context.Context, req *proto.VoteReq) (*proto.De
 		UpdateType: models.DownVote,
 	}
 
-	_, matchedCount, err := mongodb.UpdateCrypto(a.Database, crypto)
+	_, matchedCount, err := db.UpdateCrypto(a.Database, crypto)
 	if err != nil {
 		logger.Error(req.GetId(), "Crypto downvote error: "+err.Error())
 		return &responseMessage, status.Errorf(13, err.Error())
 	}
 
 	if matchedCount == 0 {
-		_, errGet := mongodb.GetById(a.Database, crypto.Id)
+		_, errGet := db.GetById(a.Database, crypto.Id)
 		// Verifying reason to mathedCount == 0 maybe crypto not exists
 		if errGet != nil {
 			logger.Error(req.GetId(), "Downvote error: "+errGet.Error())
@@ -311,7 +311,7 @@ func (a *AppServer) MonitorVotes(req *proto.MonitorVotesReq, stream proto.EndPoi
 		if cryptoUpdatedId == req.GetId() {
 
 			objId, _ := primitive.ObjectIDFromHex(cryptoUpdatedId)
-			cryptoFound, err := mongodb.GetById(a.Database, objId)
+			cryptoFound, err := db.GetById(a.Database, objId)
 			if err != nil {
 				logger.Error(req.GetId(), "Error to stram crypto: "+err.Error())
 				return status.Errorf(13, err.Error())

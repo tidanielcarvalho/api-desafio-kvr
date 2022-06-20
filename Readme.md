@@ -1,18 +1,22 @@
 # Crypto Currency - API
 Project developed in Golang with gRPC
 
-## Access
-Clone this repository and execute command ``go run main.go`` into project root
+## Start Application
+1. Clone this repository
+
+2. Duplicate env.example file to .env
+
+3. Start container, run ``docker-compose -f docker/docker-compose.yml up``
+
+4. Run ``go run main.go`` into project root
+
+
+> Log debug is enable, to debug disable change LOG_DEBUG variable in .env
 
 ## Database
 The database is docker container with mongo image
 
-For start container, run ``docker-compose -f docker/docker-compose.yml up``
-
 To view the data access ``localhost:9000`` with user ``root`` and password ``root``
-
-
-
 
 ## Proto file
 To create new protos files, remember to delete files ``proto/service_grpc.pb.go`` ``proto/service.pb.go`` and run command below
@@ -22,7 +26,7 @@ To create new protos files, remember to delete files ``proto/service_grpc.pb.go`
 ## Test
 For a better view I suggest use of plugin [Mocha Test Explorer](https://marketplace.visualstudio.com/items?itemName=hbenl.vscode-mocha-test-adapter)
 
-Or run the tests with the command ``go test ./...`` into project root
+Or run the tests with the command ``go test -v ./...`` into project root
 
 ## Requests
 To requests, I recommend use of client [BloomRPC](https://github.com/bloomrpc/bloomrpc)

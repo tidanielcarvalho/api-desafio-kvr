@@ -158,6 +158,7 @@ var OrderBy = func(sort repositories.SortParams) (string, int) {
 	if sort.Asc {
 		orderBy = 1
 	}
+	logger.Debug("Filter with field: " + field + " and orderBy: " + strconv.Itoa(orderBy))
 	return field, orderBy
 }
 

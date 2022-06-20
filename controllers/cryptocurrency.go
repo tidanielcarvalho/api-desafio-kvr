@@ -65,7 +65,7 @@ func (a *AppServer) CreateCrypto(ctx context.Context, req *proto.CreateCryptoReq
 	cryptoResponse.CreatedAt = insertedCrypto.CreatedAt.Format("2006-01-02T15:04:05.999Z")
 	cryptoResponse.UpdatedAt = insertedCrypto.UpdatedAt.Format("2006-01-02T15:04:05.999Z")
 
-	logger.Info(cryptoResponse.Id, "Crypto created with successful")
+	logger.Info(cryptoResponse.Id, "Crypto created successful")
 	return &cryptoResponse, nil
 }
 
@@ -103,7 +103,7 @@ func (a *AppServer) EditCrypto(ctx context.Context, req *proto.EditCryptoReq) (*
 	byteCrypto, _ := json.Marshal(crypto)
 	json.Unmarshal(byteCrypto, &cryptoResponse)
 
-	logger.Info(cryptoResponse.Id, "Crypto updated with successful")
+	logger.Info(cryptoResponse.Id, "Crypto updated successful")
 
 	go SetObserver(req.GetId())
 	return &cryptoResponse, nil
@@ -131,9 +131,9 @@ func (a *AppServer) DeleteCrypo(ctx context.Context, req *proto.DeleteCryptoReq)
 	}
 
 	messageResponse.Id = req.GetId()
-	messageResponse.Message = "deleted successfull"
+	messageResponse.Message = "deleted successful"
 
-	logger.Info(req.GetId(), "Crypto deleted with successful")
+	logger.Info(req.GetId(), "Crypto deleted successful")
 	return &messageResponse, err
 }
 
@@ -161,7 +161,7 @@ func (a *AppServer) FindCrypto(ctx context.Context, req *proto.FindCryptoReq) (*
 	byteFind, _ := json.Marshal(findResp)
 	json.Unmarshal(byteFind, &cryptoResponse)
 
-	logger.Info(req.GetId(), "Crypto found with successful")
+	logger.Info(req.GetId(), "Crypto found successful")
 	return &cryptoResponse, nil
 }
 
@@ -203,7 +203,7 @@ func (a *AppServer) ListAllCryptos(ctx context.Context, req *proto.SortCryptosRe
 	amount := len(cryptoList)
 	cryptoListResponse.Crypto = cryptoList
 
-	logger.Info("", "Listed "+strconv.Itoa(amount)+" crypto with successful")
+	logger.Info("", "Listed "+strconv.Itoa(amount)+" crypto successful")
 	return &cryptoListResponse, nil
 }
 
@@ -246,7 +246,7 @@ func (a *AppServer) Upvote(ctx context.Context, req *proto.VoteReq) (*proto.Defa
 	responseMessage.Id = req.GetId()
 	responseMessage.Message = "registered upvote successful"
 
-	logger.Info(req.GetId(), "Crypto upvote with successful")
+	logger.Info(req.GetId(), "Crypto upvote successful")
 
 	go SetObserver(req.GetId())
 	return &responseMessage, nil
@@ -289,7 +289,7 @@ func (a *AppServer) Downvote(ctx context.Context, req *proto.VoteReq) (*proto.De
 	}
 
 	responseMessage.Message = "registered downvote successful"
-	logger.Info(req.GetId(), "Crypto downvote with successful")
+	logger.Info(req.GetId(), "Crypto downvote successful")
 
 	go SetObserver(req.GetId())
 	return &responseMessage, nil

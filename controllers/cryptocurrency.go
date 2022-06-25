@@ -134,6 +134,8 @@ func (a *AppServer) DeleteCrypo(ctx context.Context, req *proto.DeleteCryptoReq)
 	messageResponse.Message = "deleted successful"
 
 	logger.Info(req.GetId(), "Crypto deleted successful")
+
+	go SetObserver(req.GetId())
 	return &messageResponse, err
 }
 
@@ -314,7 +316,7 @@ func (a *AppServer) MonitorVotes(req *proto.MonitorVotesReq, stream proto.EndPoi
 			cryptoFound, err := db.GetById(a.Database, objId)
 			if err != nil {
 				logger.Error(req.GetId(), "Error to stram crypto: "+err.Error())
-				return status.Errorf(13, err.Error())
+				return err
 			}
 
 			streamCrypto := &proto.CryptoCurrency{

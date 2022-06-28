@@ -1,2 +1,2 @@
 .env
-/docker/database/mongo
+/docker/database

@@ -14,9 +14,14 @@ import (
 )
 
 var logger = &helpers.Log{}
+var nameLog = "MIGRATION"
 
 func CreateInitialCryptosBulk(collection mongodb.IMCollection) {
-	countDoc, _ := mongodb.CountDocuments(collection)
+	countDoc, err := mongodb.CountDocuments(collection)
+	if err != nil {
+		logger.Error(nameLog, "Error in migration CountDocuments: "+err.Error())
+		return
+	}
 
 	// if exists documents in collection
 	if countDoc > 1 {
@@ -27,36 +32,45 @@ func CreateInitialCryptosBulk(collection mongodb.IMCollection) {
 	// else, then import
 	cryptos := GetFileToImport()
 
-	amountCryptos := len(cryptos.CryptoCurrencies)
+	amountCryptos := len(cryptos)
 	logger.Info("", "Importing "+strconv.Itoa(amountCryptos)+" cryptos in collection "+mongodb.NameCollection())
 
 	for i := 0; i < amountCryptos; i++ {
-		cryptos.CryptoCurrencies[i].Id = primitive.NewObjectID()
-		cryptos.CryptoCurrencies[i].CreatedAt = time.Now()
-		cryptos.CryptoCurrencies[i].UpdatedAt = time.Now()
+		cryptos[i].Id = primitive.NewObjectID()
+		cryptos[i].CreatedAt = time.Now()
+		cryptos[i].UpdatedAt = time.Now()
 
-		_, err := mongodb.InsertCryptos(collection, cryptos.CryptoCurrencies[i])
+		_, err := mongodb.InsertCryptos(collection, cryptos[i])
 		if err != nil {
 			logger.Error("", "Error in import "+err.Error())
 		}
-		logger.Debug("", "Crypto "+cryptos.CryptoCurrencies[i].Name+" imported")
+		logger.Debug("", "Crypto "+cryptos[i].Name+" imported")
 	}
 }
 
-func GetFileToImport() models.CryptoCurrencies {
+func GetFileToImport() []models.CryptoCurrency {
+	var cryptos []models.CryptoCurrency
 	path := "repositories/migration/dataInitial.json"
+
 	jsonFile, err := os.Open(path)
 	if err != nil {
-		logger.Fatal("", err.Error(), err)
+		logger.Error(nameLog, err.Error())
+		return cryptos
 	}
-	logger.Info("", "Successful to open file json "+path)
+	logger.Info(nameLog, "Successful to open file json "+path)
 
 	defer jsonFile.Close()
 
-	byteValue, _ := ioutil.ReadAll(jsonFile)
+	byteValue, err := ioutil.ReadAll(jsonFile)
+	if err != nil {
+		logger.Error(nameLog, err.Error())
+		return cryptos
+	}
 
-	var cryptos models.CryptoCurrencies
-	json.Unmarshal(byteValue, &cryptos)
+	err = json.Unmarshal(byteValue, &cryptos)
+	if err != nil {
+		logger.Error(nameLog, err.Error())
+	}
 
 	return cryptos
 }

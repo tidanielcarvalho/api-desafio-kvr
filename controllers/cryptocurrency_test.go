@@ -10,7 +10,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"google.golang.org/grpc"
@@ -123,10 +123,10 @@ func TestCreateCryptoWithNameInvalid(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	result, err := server.CreateCrypto(ctx, &crypto)
 
-	assert.Equal(t, "rpc error: code = InvalidArgument desc = name is invalid: Crypto 123", err.Error())
-	assert.Empty(t, result.Id)
-	assert.Empty(t, result.CreatedAt)
-	assert.Empty(t, result.UpdatedAt)
+	require.Equal(t, "rpc error: code = InvalidArgument desc = name is invalid: Crypto 123", err.Error()) // ideal o require
+	require.Empty(t, result.Id)
+	require.Empty(t, result.CreatedAt)
+	require.Empty(t, result.UpdatedAt)
 
 	defer cancel()
 }
@@ -140,10 +140,10 @@ func TestCreateCryptoWithAssetIdInvalid(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	result, err := server.CreateCrypto(ctx, &crypto)
 
-	assert.Equal(t, "rpc error: code = InvalidArgument desc = asset_id is invalid: a", err.Error())
-	assert.Empty(t, result.Id)
-	assert.Empty(t, result.CreatedAt)
-	assert.Empty(t, result.UpdatedAt)
+	require.Equal(t, "rpc error: code = InvalidArgument desc = asset_id is invalid: a", err.Error())
+	require.Empty(t, result.Id)
+	require.Empty(t, result.CreatedAt)
+	require.Empty(t, result.UpdatedAt)
 
 	defer cancel()
 }
@@ -157,10 +157,10 @@ func TestCreateCryptoWithPriceUsdInvalid(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	result, err := server.CreateCrypto(ctx, &crypto)
 
-	assert.Equal(t, "rpc error: code = InvalidArgument desc = price_usd is invalid: -5.000000", err.Error())
-	assert.Empty(t, result.Id)
-	assert.Empty(t, result.CreatedAt)
-	assert.Empty(t, result.UpdatedAt)
+	require.Equal(t, "rpc error: code = InvalidArgument desc = price_usd is invalid: -5.000000", err.Error())
+	require.Empty(t, result.Id)
+	require.Empty(t, result.CreatedAt)
+	require.Empty(t, result.UpdatedAt)
 
 	defer cancel()
 }
@@ -177,12 +177,12 @@ func TestCreateCryptoWithError(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	result, err := server.CreateCrypto(ctx, &crypto)
 
-	assert.NotNil(t, err)
-	assert.Equal(t, "rpc error: code = Internal desc = test create error", err.Error())
-	assert.Empty(t, result.Id)
-	assert.Empty(t, result.Votes)
-	assert.Empty(t, result.CreatedAt)
-	assert.Empty(t, result.UpdatedAt)
+	require.NotNil(t, err)
+	require.Equal(t, "rpc error: code = Internal desc = test create error", err.Error())
+	require.Empty(t, result.Id)
+	require.Empty(t, result.Votes)
+	require.Empty(t, result.CreatedAt)
+	require.Empty(t, result.UpdatedAt)
 
 	defer cancel()
 }
@@ -199,14 +199,14 @@ func TestCreateCryptoWithSuccess(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	result, err := server.CreateCrypto(ctx, &crypto)
 
-	assert.Nil(t, err)
-	assert.NotEmpty(t, result.Id)
-	assert.Equal(t, crypto.Name, result.Name)
-	assert.Equal(t, crypto.AssetId, result.AssetId)
-	assert.Equal(t, crypto.PriceUsd, result.PriceUsd)
-	assert.Empty(t, result.Votes)
-	assert.NotEmpty(t, result.CreatedAt)
-	assert.NotEmpty(t, result.UpdatedAt)
+	require.Nil(t, err)
+	require.NotEmpty(t, result.Id)
+	require.Equal(t, crypto.Name, result.Name)
+	require.Equal(t, crypto.AssetId, result.AssetId)
+	require.Equal(t, crypto.PriceUsd, result.PriceUsd)
+	require.Empty(t, result.Votes)
+	require.NotEmpty(t, result.CreatedAt)
+	require.NotEmpty(t, result.UpdatedAt)
 
 	defer cancel()
 }
@@ -220,10 +220,10 @@ func TestEditCryptoWithIdInvalid(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	result, err := server.EditCrypto(ctx, &crypto)
 
-	assert.Equal(t, "rpc error: code = InvalidArgument desc = id is invalid: 123abc err: the provided hex string is not a valid ObjectID", err.Error())
-	assert.Empty(t, result.Id)
-	assert.Empty(t, result.CreatedAt)
-	assert.Empty(t, result.UpdatedAt)
+	require.Equal(t, "rpc error: code = InvalidArgument desc = id is invalid: 123abc err: the provided hex string is not a valid ObjectID", err.Error())
+	require.Empty(t, result.Id)
+	require.Empty(t, result.CreatedAt)
+	require.Empty(t, result.UpdatedAt)
 
 	defer cancel()
 }
@@ -237,10 +237,10 @@ func TestEditCryptoWithNameInvalid(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	result, err := server.EditCrypto(ctx, &crypto)
 
-	assert.Equal(t, "rpc error: code = InvalidArgument desc = name is invalid: Crypto 123", err.Error())
-	assert.Empty(t, result.Id)
-	assert.Empty(t, result.CreatedAt)
-	assert.Empty(t, result.UpdatedAt)
+	require.Equal(t, "rpc error: code = InvalidArgument desc = name is invalid: Crypto 123", err.Error())
+	require.Empty(t, result.Id)
+	require.Empty(t, result.CreatedAt)
+	require.Empty(t, result.UpdatedAt)
 
 	defer cancel()
 }
@@ -254,10 +254,10 @@ func TestEditCryptoWithAssetIdInvalid(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	result, err := server.EditCrypto(ctx, &crypto)
 
-	assert.Equal(t, "rpc error: code = InvalidArgument desc = asset_id is invalid: a", err.Error())
-	assert.Empty(t, result.Id)
-	assert.Empty(t, result.CreatedAt)
-	assert.Empty(t, result.UpdatedAt)
+	require.Equal(t, "rpc error: code = InvalidArgument desc = asset_id is invalid: a", err.Error())
+	require.Empty(t, result.Id)
+	require.Empty(t, result.CreatedAt)
+	require.Empty(t, result.UpdatedAt)
 
 	defer cancel()
 }
@@ -271,10 +271,10 @@ func TestEditCryptoWithPriceUsdInvalid(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	result, err := server.EditCrypto(ctx, &crypto)
 
-	assert.Equal(t, "rpc error: code = InvalidArgument desc = price_usd is invalid: -5.000000", err.Error())
-	assert.Empty(t, result.Id)
-	assert.Empty(t, result.CreatedAt)
-	assert.Empty(t, result.UpdatedAt)
+	require.Equal(t, "rpc error: code = InvalidArgument desc = price_usd is invalid: -5.000000", err.Error())
+	require.Empty(t, result.Id)
+	require.Empty(t, result.CreatedAt)
+	require.Empty(t, result.UpdatedAt)
 
 	defer cancel()
 }
@@ -291,12 +291,12 @@ func TestEditCryptoWithUpdateCryptoError(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	result, err := server.EditCrypto(ctx, &crypto)
 
-	assert.NotNil(t, err)
-	assert.Equal(t, "rpc error: code = Internal desc = test update error", err.Error())
-	assert.NotNil(t, result.Id)
-	assert.NotNil(t, result.Votes)
-	assert.Empty(t, result.CreatedAt)
-	assert.Empty(t, result.UpdatedAt)
+	require.NotNil(t, err)
+	require.Equal(t, "rpc error: code = Internal desc = test update error", err.Error())
+	require.NotNil(t, result.Id)
+	require.NotNil(t, result.Votes)
+	require.Empty(t, result.CreatedAt)
+	require.Empty(t, result.UpdatedAt)
 
 	defer cancel()
 }
@@ -317,12 +317,12 @@ func TestEditCryptoWithGetByIdError(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	result, err := server.EditCrypto(ctx, &crypto)
 
-	assert.NotNil(t, err)
-	assert.Equal(t, "rpc error: code = NotFound desc = test getbyid error", err.Error())
-	assert.Empty(t, result.Id)
-	assert.Empty(t, result.Votes)
-	assert.Empty(t, result.CreatedAt)
-	assert.Empty(t, result.UpdatedAt)
+	require.NotNil(t, err)
+	require.Equal(t, "rpc error: code = NotFound desc = test getbyid error", err.Error())
+	require.Empty(t, result.Id)
+	require.Empty(t, result.Votes)
+	require.Empty(t, result.CreatedAt)
+	require.Empty(t, result.UpdatedAt)
 
 	defer cancel()
 }
@@ -349,14 +349,14 @@ func TestEditCryptoWithSuccess(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	result, err := server.EditCrypto(ctx, &crypto)
 
-	assert.Nil(t, err)
-	assert.NotEmpty(t, result.Id)
-	assert.Equal(t, crypto.Name, result.Name)
-	assert.Equal(t, crypto.AssetId, result.AssetId)
-	assert.Equal(t, crypto.PriceUsd, result.PriceUsd)
-	assert.Empty(t, result.Votes)
-	assert.NotEmpty(t, result.CreatedAt)
-	assert.NotEmpty(t, result.UpdatedAt)
+	require.Nil(t, err)
+	require.NotEmpty(t, result.Id)
+	require.Equal(t, crypto.Name, result.Name)
+	require.Equal(t, crypto.AssetId, result.AssetId)
+	require.Equal(t, crypto.PriceUsd, result.PriceUsd)
+	require.Empty(t, result.Votes)
+	require.NotEmpty(t, result.CreatedAt)
+	require.NotEmpty(t, result.UpdatedAt)
 
 	defer cancel()
 }
@@ -370,8 +370,8 @@ func TestDeleteCryptoWithIdInvalid(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	result, err := server.DeleteCrypo(ctx, &crypto)
 
-	assert.Equal(t, "rpc error: code = InvalidArgument desc = id is invalid: 123abc err: the provided hex string is not a valid ObjectID", err.Error())
-	assert.Empty(t, result.Message)
+	require.Equal(t, "rpc error: code = InvalidArgument desc = id is invalid: 123abc err: the provided hex string is not a valid ObjectID", err.Error())
+	require.Empty(t, result.Message)
 
 	defer cancel()
 }
@@ -388,8 +388,8 @@ func TestDeleteCryptoWithDeleteByIdErrorErrNoDocuments(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	result, err := server.DeleteCrypo(ctx, &crypto)
 
-	assert.Equal(t, "rpc error: code = NotFound desc = mongo: no documents in result", err.Error())
-	assert.Empty(t, result.Message)
+	require.Equal(t, "rpc error: code = NotFound desc = mongo: no documents in result", err.Error())
+	require.Empty(t, result.Message)
 
 	defer cancel()
 }
@@ -406,8 +406,8 @@ func TestDeleteCryptoWithDeleteByIdError(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	result, err := server.DeleteCrypo(ctx, &crypto)
 
-	assert.Equal(t, "rpc error: code = Internal desc = testing DeleteCrypo with error in DeleteById", err.Error())
-	assert.Empty(t, result.Message)
+	require.Equal(t, "rpc error: code = Internal desc = testing DeleteCrypo with error in DeleteById", err.Error())
+	require.Empty(t, result.Message)
 
 	defer cancel()
 }
@@ -424,9 +424,9 @@ func TestDeleteCryptoWithSuccess(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	result, err := server.DeleteCrypo(ctx, &crypto)
 
-	assert.Nil(t, err)
-	assert.Equal(t, crypto.Id, result.Id)
-	assert.Equal(t, "deleted successful", result.Message)
+	require.Nil(t, err)
+	require.Equal(t, crypto.Id, result.Id)
+	require.Equal(t, "deleted successful", result.Message)
 
 	defer cancel()
 }
@@ -440,8 +440,8 @@ func TestFindCryptoWithIdInvalid(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	_, err := server.FindCrypto(ctx, &crypto)
 
-	assert.NotNil(t, err)
-	assert.Equal(t, "rpc error: code = InvalidArgument desc = id is invalid: 123abc err: the provided hex string is not a valid ObjectID", err.Error())
+	require.NotNil(t, err)
+	require.Equal(t, "rpc error: code = InvalidArgument desc = id is invalid: 123abc err: the provided hex string is not a valid ObjectID", err.Error())
 
 	defer cancel()
 }
@@ -458,8 +458,8 @@ func TestFindCryptoWithDeleteByIdErrorErrNoDocuments(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	_, err := server.FindCrypto(ctx, &crypto)
 
-	assert.NotNil(t, err)
-	assert.Equal(t, "rpc error: code = NotFound desc = mongo: no documents in result", err.Error())
+	require.NotNil(t, err)
+	require.Equal(t, "rpc error: code = NotFound desc = mongo: no documents in result", err.Error())
 
 	defer cancel()
 }
@@ -476,8 +476,8 @@ func TestFindCryptoWithDeleteByIdError(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	_, err := server.FindCrypto(ctx, &crypto)
 
-	assert.NotNil(t, err)
-	assert.Equal(t, "rpc error: code = Internal desc = testing FindCrypo with error in GetById", err.Error())
+	require.NotNil(t, err)
+	require.Equal(t, "rpc error: code = Internal desc = testing FindCrypo with error in GetById", err.Error())
 
 	defer cancel()
 }
@@ -496,14 +496,14 @@ func TestFindCryptoWithSuccess(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	result, err := server.FindCrypto(ctx, &crypto)
 
-	assert.Nil(t, err)
-	assert.Equal(t, mockResponse.Id.Hex(), result.Id)
-	assert.Equal(t, mockResponse.Name, result.Name)
-	assert.Equal(t, mockResponse.AssetId, result.AssetId)
-	assert.Equal(t, mockResponse.PriceUsd, result.PriceUsd)
-	assert.Equal(t, mockResponse.Votes, result.Votes)
-	assert.NotEmpty(t, result.CreatedAt)
-	assert.NotEmpty(t, result.UpdatedAt)
+	require.Nil(t, err)
+	require.Equal(t, mockResponse.Id.Hex(), result.Id)
+	require.Equal(t, mockResponse.Name, result.Name)
+	require.Equal(t, mockResponse.AssetId, result.AssetId)
+	require.Equal(t, mockResponse.PriceUsd, result.PriceUsd)
+	require.Equal(t, mockResponse.Votes, result.Votes)
+	require.NotEmpty(t, result.CreatedAt)
+	require.NotEmpty(t, result.UpdatedAt)
 
 	defer cancel()
 }
@@ -517,8 +517,8 @@ func TestListAllCryptosWithSortParamsInvalid(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	_, err := server.ListAllCryptos(ctx, &sortParams)
 
-	assert.NotNil(t, err)
-	assert.Equal(t, "rpc error: code = InvalidArgument desc = field is invalid: a", err.Error())
+	require.NotNil(t, err)
+	require.Equal(t, "rpc error: code = InvalidArgument desc = field is invalid: a", err.Error())
 
 	defer cancel()
 }
@@ -535,8 +535,8 @@ func TestListAllCryptosWithListAllError(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	_, err := server.ListAllCryptos(ctx, &sortParams)
 
-	assert.NotNil(t, err)
-	assert.Equal(t, "rpc error: code = Internal desc = testing ListAllCryptos with error in ListAll", err.Error())
+	require.NotNil(t, err)
+	require.Equal(t, "rpc error: code = Internal desc = testing ListAllCryptos with error in ListAll", err.Error())
 
 	defer cancel()
 }
@@ -555,8 +555,8 @@ func TestListAllCryptosWithListAllEmpty(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	result, err := server.ListAllCryptos(ctx, &sortParams)
 
-	assert.Nil(t, err)
-	assert.Equal(t, mockCryptoEmpty.Crypto, result.Crypto)
+	require.Nil(t, err)
+	require.Equal(t, mockCryptoEmpty.Crypto, result.Crypto)
 
 	defer cancel()
 }
@@ -573,8 +573,8 @@ func TestListAllCryptosWithSuccess(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	result, err := server.ListAllCryptos(ctx, &sortParams)
 
-	assert.Nil(t, err)
-	assert.Equal(t, 2, len(result.Crypto))
+	require.Nil(t, err)
+	require.Equal(t, 2, len(result.Crypto))
 
 	defer cancel()
 }
@@ -588,8 +588,8 @@ func TestUpvoteWithIdInvalid(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	_, err := server.Upvote(ctx, &crypto)
 
-	assert.NotNil(t, err)
-	assert.Equal(t, "rpc error: code = InvalidArgument desc = id is invalid: 123abc err: the provided hex string is not a valid ObjectID", err.Error())
+	require.NotNil(t, err)
+	require.Equal(t, "rpc error: code = InvalidArgument desc = id is invalid: 123abc err: the provided hex string is not a valid ObjectID", err.Error())
 
 	defer cancel()
 }
@@ -606,8 +606,8 @@ func TestUpvoteWithUpdateCryptoError(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	_, err := server.Upvote(ctx, &crypto)
 
-	assert.NotNil(t, err)
-	assert.Equal(t, "rpc error: code = Internal desc = testing Upvote with error in UpdateCrypto", err.Error())
+	require.NotNil(t, err)
+	require.Equal(t, "rpc error: code = Internal desc = testing Upvote with error in UpdateCrypto", err.Error())
 
 	defer cancel()
 }
@@ -628,8 +628,8 @@ func TestUpvoteWithUpdateCryptoMatchedCountZeroAndGetByIdError(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	_, err := server.Upvote(ctx, &crypto)
 
-	assert.NotNil(t, err)
-	assert.Equal(t, "rpc error: code = NotFound desc = testing Upvote with error in GetById", err.Error())
+	require.NotNil(t, err)
+	require.Equal(t, "rpc error: code = NotFound desc = testing Upvote with error in GetById", err.Error())
 
 	defer cancel()
 }
@@ -650,8 +650,8 @@ func TestUpvoteWithUpdateCryptoMatchedCountZeroButGetByIdCryptoNotExist(t *testi
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	_, err := server.Upvote(ctx, &crypto)
 
-	assert.NotNil(t, err)
-	assert.Equal(t, "rpc error: code = Internal desc = crypto not exist", err.Error())
+	require.NotNil(t, err)
+	require.Equal(t, "rpc error: code = Internal desc = crypto not exist", err.Error())
 
 	defer cancel()
 }
@@ -674,9 +674,9 @@ func TestUpvoteWithSuccess(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	result, err := server.Upvote(ctx, &crypto)
 
-	assert.Nil(t, err)
-	assert.Equal(t, crypto.Id, result.Id)
-	assert.Equal(t, "registered upvote successful", result.Message)
+	require.Nil(t, err)
+	require.Equal(t, crypto.Id, result.Id)
+	require.Equal(t, "registered upvote successful", result.Message)
 
 	defer cancel()
 }
@@ -690,8 +690,8 @@ func TestDownvoteWithIdInvalid(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	_, err := server.Downvote(ctx, &crypto)
 
-	assert.NotNil(t, err)
-	assert.Equal(t, "rpc error: code = InvalidArgument desc = id is invalid: 123abc err: the provided hex string is not a valid ObjectID", err.Error())
+	require.NotNil(t, err)
+	require.Equal(t, "rpc error: code = InvalidArgument desc = id is invalid: 123abc err: the provided hex string is not a valid ObjectID", err.Error())
 
 	defer cancel()
 }
@@ -708,8 +708,8 @@ func TestDownvoteWithUpdateCryptoError(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	_, err := server.Downvote(ctx, &crypto)
 
-	assert.NotNil(t, err)
-	assert.Equal(t, "rpc error: code = Internal desc = testing Downvote with error in UpdateCrypto", err.Error())
+	require.NotNil(t, err)
+	require.Equal(t, "rpc error: code = Internal desc = testing Downvote with error in UpdateCrypto", err.Error())
 
 	defer cancel()
 }
@@ -730,8 +730,8 @@ func TestDownvoteWithUpdateCryptoMatchedCountZeroAndGetByIdError(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	_, err := server.Downvote(ctx, &crypto)
 
-	assert.NotNil(t, err)
-	assert.Equal(t, "rpc error: code = NotFound desc = testing Downvote with error in GetById", err.Error())
+	require.NotNil(t, err)
+	require.Equal(t, "rpc error: code = NotFound desc = testing Downvote with error in GetById", err.Error())
 
 	defer cancel()
 }
@@ -752,8 +752,8 @@ func TestDownvoteWithVoteEqualZero(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	_, err := server.Downvote(ctx, &crypto)
 
-	assert.NotNil(t, err)
-	assert.Equal(t, "rpc error: code = Internal desc = unchanged crypto because vote = 0", err.Error())
+	require.NotNil(t, err)
+	require.Equal(t, "rpc error: code = Internal desc = unchanged crypto because vote = 0", err.Error())
 
 	defer cancel()
 }
@@ -776,9 +776,9 @@ func TestDownvoteWithSuccess(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	result, err := server.Downvote(ctx, &crypto)
 
-	assert.Nil(t, err)
-	assert.Equal(t, crypto.Id, result.Id)
-	assert.Equal(t, "registered downvote successful", result.Message)
+	require.Nil(t, err)
+	require.Equal(t, crypto.Id, result.Id)
+	require.Equal(t, "registered downvote successful", result.Message)
 
 	defer cancel()
 }
@@ -793,8 +793,8 @@ func TestMonitorVotesWithIdInvalid(t *testing.T) {
 	_, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	err := server.MonitorVotes(&crypto, &mockStream)
 
-	assert.NotNil(t, err)
-	assert.Equal(t, "rpc error: code = InvalidArgument desc = id is invalid: 123abc err: the provided hex string is not a valid ObjectID", err.Error())
+	require.NotNil(t, err)
+	require.Equal(t, "rpc error: code = InvalidArgument desc = id is invalid: 123abc err: the provided hex string is not a valid ObjectID", err.Error())
 
 	defer cancel()
 }
@@ -843,8 +843,8 @@ func TestMonitorVotesWithGetByIdError(t *testing.T) {
 
 	defer cancel()
 
-	assert.NotNil(t, err)
-	assert.Equal(t, "rpc error: code = Internal desc = testing MonitorVotes with error in GetById", err.Error())
+	require.NotNil(t, err)
+	require.Equal(t, "testing MonitorVotes with error in GetById", err.Error())
 }
 
 // Testing monitor votes successful
@@ -883,7 +883,7 @@ func TestMonitorVotesWithSuccess(t *testing.T) {
 		logger.Info("TESTING", "Timeout successful ")
 	}
 
-	assert.Equal(t, 1, len(mockStream.Results))
-	assert.Equal(t, cryptoResponseStream.Id.Hex(), mockStream.Results[0].Id)
-	assert.Equal(t, cryptoResponseStream.Name, mockStream.Results[0].Name)
+	require.Equal(t, 1, len(mockStream.Results))
+	require.Equal(t, cryptoResponseStream.Id.Hex(), mockStream.Results[0].Id)
+	require.Equal(t, cryptoResponseStream.Name, mockStream.Results[0].Name)
 }

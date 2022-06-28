@@ -1,6 +1,7 @@
 package models
 
 import (
+	"api-desafio-kvr/proto"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -26,6 +27,19 @@ type CryptoCurrency struct {
 	CreatedAt  time.Time          `json:"created_at" bson:"created_at"`
 	UpdatedAt  time.Time          `json:"updated_at" bson:"updated_at"`
 	UpdateType string             `json:"-" bson:"-"` // Not insert in db
+}
+
+// Converter model crypto para proto crypto ?
+func (c *CryptoCurrency) ToProtoCrypto() proto.CryptoCurrency {
+	return proto.CryptoCurrency{
+		Id:        c.Id.Hex(),
+		Name:      c.Name,
+		AssetId:   c.AssetId,
+		PriceUsd:  c.PriceUsd,
+		Votes:     int32(c.Votes),
+		CreatedAt: c.CreatedAt.Format("2006-01-02T15:04:05.999Z"),
+		UpdatedAt: c.UpdatedAt.Format("2006-01-02T15:04:05.999Z"),
+	}
 }
 
 func (c *CryptoCurrency) PrepateToInsert() {

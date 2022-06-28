@@ -29,7 +29,6 @@ type CryptoCurrency struct {
 	UpdateType string             `json:"-" bson:"-"` // Not insert in db
 }
 
-// Converter model crypto para proto crypto ?
 func (c *CryptoCurrency) ToProtoCrypto() proto.CryptoCurrency {
 	return proto.CryptoCurrency{
 		Id:        c.Id.Hex(),

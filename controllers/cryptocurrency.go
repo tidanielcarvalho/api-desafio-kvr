@@ -203,7 +203,7 @@ func (a *AppServer) FindCrypto(ctx context.Context, req *proto.FindCryptoReq) (*
 			return &cryptoResponse, nil
 		}
 		// else continue
-		logger.Error(req.GetId(), err.Error())
+		logger.Warn(req.GetId(), err.Error())
 	}
 
 	objId, err := primitive.ObjectIDFromHex(req.GetId())
@@ -262,7 +262,7 @@ func (a *AppServer) ListAllCryptos(ctx context.Context, req *proto.SortCryptosRe
 			return &cryptoListResponse, nil
 		}
 		// else continue
-		logger.Error(key, err.Error())
+		logger.Warn(key, err.Error())
 	}
 
 	// if GetOrderBy == true then orderBy is ASC, else orderBy is DESC

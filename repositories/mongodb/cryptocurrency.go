@@ -144,8 +144,14 @@ var QueryToUpdate = func(crypto models.CryptoCurrency) (where bson.M, update bso
 	}
 
 	// Help to log
-	whereLog, _ := json.Marshal(where)
-	updateLog, _ := json.Marshal(update)
+	whereLog, err := json.Marshal(where)
+	if err != nil {
+		logger.Error(crypto.Id.Hex(), err.Error())
+	}
+	updateLog, err := json.Marshal(update)
+	if err != nil {
+		logger.Error(crypto.Id.Hex(), err.Error())
+	}
 	logger.Debug(crypto.Id.Hex(), "Query to updated selected - where: "+string(whereLog)+" - update: "+string(updateLog))
 
 	return where, update, nil

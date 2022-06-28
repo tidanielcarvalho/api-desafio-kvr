@@ -6,6 +6,7 @@ import (
 	"api-desafio-kvr/proto"
 	"api-desafio-kvr/repositories"
 	db "api-desafio-kvr/repositories/mongodb"
+	rds "api-desafio-kvr/repositories/redis"
 	"context"
 	"encoding/json"
 	"errors"
@@ -59,8 +60,22 @@ func (a *AppServer) CreateCrypto(ctx context.Context, req *proto.CreateCryptoReq
 		return &cryptoResponse, status.Errorf(13, err.Error())
 	}
 
-	byteCrypto, _ := json.Marshal(insertedCrypto)
-	json.Unmarshal(byteCrypto, &cryptoResponse)
+	// Set cache in Redis
+	err = rds.Set(insertedCrypto.Id.Hex(), insertedCrypto, rds.YesDeleteAll)
+	if err != nil {
+		logger.Error(insertedCrypto.Id.Hex(), "Error to set cache in redis: "+err.Error())
+	}
+
+	byteCrypto, err := json.Marshal(insertedCrypto)
+	if err != nil {
+		logger.Error(insertedCrypto.Id.Hex(), "Error in response: "+err.Error())
+		return &cryptoResponse, status.Errorf(13, err.Error())
+	}
+	err = json.Unmarshal(byteCrypto, &cryptoResponse)
+	if err != nil {
+		logger.Error(insertedCrypto.Id.Hex(), "Error in response: "+err.Error())
+		return &cryptoResponse, status.Errorf(13, err.Error())
+	}
 
 	cryptoResponse.CreatedAt = insertedCrypto.CreatedAt.Format("2006-01-02T15:04:05.999Z")
 	cryptoResponse.UpdatedAt = insertedCrypto.UpdatedAt.Format("2006-01-02T15:04:05.999Z")
@@ -79,7 +94,12 @@ func (a *AppServer) EditCrypto(ctx context.Context, req *proto.EditCryptoReq) (*
 		return &cryptoResponse, status.Errorf(3, err.Error())
 	}
 
-	objId, _ := primitive.ObjectIDFromHex(req.GetId())
+	objId, err := primitive.ObjectIDFromHex(req.GetId())
+	if err != nil {
+		logger.Error(req.GetId(), "Params edit crypto is invalid "+req.String())
+		return &cryptoResponse, status.Errorf(3, err.Error())
+	}
+
 	cryptoUpdate := models.CryptoCurrency{
 		Id:         objId,
 		Name:       cases.Title(language.AmericanEnglish).String(req.GetName()),
@@ -100,8 +120,22 @@ func (a *AppServer) EditCrypto(ctx context.Context, req *proto.EditCryptoReq) (*
 		return &cryptoResponse, status.Errorf(5, err.Error())
 	}
 
-	byteCrypto, _ := json.Marshal(crypto)
-	json.Unmarshal(byteCrypto, &cryptoResponse)
+	// Set cache in Redis
+	err = rds.Set(crypto.Id.Hex(), crypto, rds.YesDeleteAll)
+	if err != nil {
+		logger.Error(req.GetId(), "Error to set cache in redis: "+err.Error())
+	}
+
+	byteCrypto, err := json.Marshal(crypto)
+	if err != nil {
+		logger.Error(crypto.Id.Hex(), "Error in response EditCrypto: "+err.Error())
+		return &cryptoResponse, status.Errorf(13, err.Error())
+	}
+	err = json.Unmarshal(byteCrypto, &cryptoResponse)
+	if err != nil {
+		logger.Error(crypto.Id.Hex(), "Error in response EditCrypto: "+err.Error())
+		return &cryptoResponse, status.Errorf(13, err.Error())
+	}
 
 	logger.Info(cryptoResponse.Id, "Crypto updated successful")
 
@@ -119,7 +153,12 @@ func (a *AppServer) DeleteCrypo(ctx context.Context, req *proto.DeleteCryptoReq)
 		return &messageResponse, status.Errorf(3, err.Error())
 	}
 
-	objId, _ := primitive.ObjectIDFromHex(req.GetId())
+	objId, err := primitive.ObjectIDFromHex(req.GetId())
+	if err != nil {
+		logger.Error(req.GetId(), "Params edit crypto is invalid "+req.String())
+		return &messageResponse, status.Errorf(3, err.Error())
+	}
+
 	_, err = db.DeleteById(a.Database, objId)
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
@@ -128,6 +167,12 @@ func (a *AppServer) DeleteCrypo(ctx context.Context, req *proto.DeleteCryptoReq)
 		}
 		logger.Error("", "Crypto not deleted "+req.String()+" error: "+err.Error())
 		return &messageResponse, status.Errorf(13, err.Error())
+	}
+
+	// Delete cache in Redis
+	err = rds.Del(req.GetId())
+	if err != nil {
+		logger.Error(req.GetId(), "Error to delete cache in redis: "+err.Error())
 	}
 
 	messageResponse.Id = req.GetId()
@@ -149,7 +194,23 @@ func (a *AppServer) FindCrypto(ctx context.Context, req *proto.FindCryptoReq) (*
 		return &cryptoResponse, status.Errorf(3, err.Error())
 	}
 
-	objId, _ := primitive.ObjectIDFromHex(req.GetId())
+	// Get cache in Redis
+	cache := rds.Get(req.GetId())
+	if cache != nil {
+		err = json.Unmarshal([]byte(cache), &cryptoResponse)
+		if err == nil {
+			logger.Info(req.GetId(), "Found cache successful")
+			return &cryptoResponse, nil
+		}
+		// else continue
+		logger.Error(req.GetId(), err.Error())
+	}
+
+	objId, err := primitive.ObjectIDFromHex(req.GetId())
+	if err != nil {
+		return &cryptoResponse, nil
+	}
+
 	findResp, err := db.GetById(a.Database, objId)
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
@@ -160,8 +221,22 @@ func (a *AppServer) FindCrypto(ctx context.Context, req *proto.FindCryptoReq) (*
 		return &cryptoResponse, status.Errorf(13, err.Error())
 	}
 
-	byteFind, _ := json.Marshal(findResp)
-	json.Unmarshal(byteFind, &cryptoResponse)
+	// Set cache in Redis
+	err = rds.Set(findResp.Id.Hex(), findResp, rds.YesDeleteAll)
+	if err != nil {
+		logger.Error(findResp.Id.Hex(), "Error to set cache in redis: "+err.Error())
+	}
+
+	byteFind, err := json.Marshal(findResp)
+	if err != nil {
+		logger.Error(findResp.Id.Hex(), "Error in response FindCrypto: "+err.Error())
+		return &cryptoResponse, status.Errorf(13, err.Error())
+	}
+	err = json.Unmarshal(byteFind, &cryptoResponse)
+	if err != nil {
+		logger.Error(findResp.Id.Hex(), "Error in response FindCrypto: "+err.Error())
+		return &cryptoResponse, status.Errorf(13, err.Error())
+	}
 
 	logger.Info(req.GetId(), "Crypto found successful")
 	return &cryptoResponse, nil
@@ -177,11 +252,25 @@ func (a *AppServer) ListAllCryptos(ctx context.Context, req *proto.SortCryptosRe
 		return &cryptoListResponse, status.Errorf(3, err.Error())
 	}
 
+	// Get cache in Redis
+	key := rds.PrefixDeleteAll + "-" + req.GetFieldSort() + "-" + strconv.FormatBool(req.GetOrderBy())
+	cryptos := rds.Get(key)
+	if cryptos != nil {
+		err = json.Unmarshal([]byte(cryptos), &cryptoListResponse)
+		if err == nil {
+			logger.Info(key, "Found cache successful")
+			return &cryptoListResponse, nil
+		}
+		// else continue
+		logger.Error(key, err.Error())
+	}
+
 	// if GetOrderBy == true then orderBy is ASC, else orderBy is DESC
 	sort := repositories.SortParams{
 		Field: req.GetFieldSort(),
 		Asc:   req.GetOrderBy(),
 	}
+
 	response, err := db.ListAll(a.Database, sort)
 	if err != nil {
 		logger.Error("", "Cryptos not listed because error "+req.String()+" error: "+err.Error())
@@ -189,21 +278,25 @@ func (a *AppServer) ListAllCryptos(ctx context.Context, req *proto.SortCryptosRe
 	}
 
 	cryptoList := []*proto.CryptoCurrency{}
-
 	for _, value := range response {
-		cryptoList = append(cryptoList, &proto.CryptoCurrency{
-			Id:        value.Id.Hex(),
-			Name:      value.Name,
-			AssetId:   value.AssetId,
-			PriceUsd:  value.PriceUsd,
-			Votes:     int32(value.Votes),
-			CreatedAt: value.CreatedAt.Format("2006-01-02T15:04:05.999Z"),
-			UpdatedAt: value.UpdatedAt.Format("2006-01-02T15:04:05.999Z"),
-		})
+		proto := value.ToProtoCrypto()
+		cryptoList = append(cryptoList, &proto)
 	}
 
 	amount := len(cryptoList)
 	cryptoListResponse.Crypto = cryptoList
+
+	byteCrypto, err := json.Marshal(cryptoListResponse)
+	if err != nil {
+		logger.Error("", "Error to set cache in redis: "+err.Error())
+		return &cryptoListResponse, nil
+	}
+	// Set cache in Redis
+	key = rds.PrefixDeleteAll + "-" + sort.Field + "-" + strconv.FormatBool(sort.Asc)
+	err = rds.SetByByte(key, string(byteCrypto), rds.NoDeleteAll)
+	if err != nil {
+		logger.Error("", "Error to set cache in redis: "+err.Error())
+	}
 
 	logger.Info("", "Listed "+strconv.Itoa(amount)+" crypto successful")
 	return &cryptoListResponse, nil
@@ -219,7 +312,11 @@ func (a *AppServer) Upvote(ctx context.Context, req *proto.VoteReq) (*proto.Defa
 		return &responseMessage, status.Errorf(3, err.Error())
 	}
 
-	objId, _ := primitive.ObjectIDFromHex(req.GetId())
+	objId, err := primitive.ObjectIDFromHex(req.GetId())
+	if err != nil {
+		return &responseMessage, status.Errorf(3, err.Error())
+	}
+
 	crypto := models.CryptoCurrency{
 		Id:         objId,
 		UpdateType: models.UpVote,
@@ -231,9 +328,10 @@ func (a *AppServer) Upvote(ctx context.Context, req *proto.VoteReq) (*proto.Defa
 		return &responseMessage, status.Errorf(13, err.Error())
 	}
 
+	crypto, errGet := db.GetById(a.Database, crypto.Id)
+
 	// if document not updated, verify if exist
 	if matchedCount == 0 {
-		_, errGet := db.GetById(a.Database, crypto.Id)
 		// Verifying reason to mathedCount == 0 maybe crypto not exists
 		if errGet != nil {
 			logger.Error(req.GetId(), "Upvote error: "+errGet.Error())
@@ -250,6 +348,12 @@ func (a *AppServer) Upvote(ctx context.Context, req *proto.VoteReq) (*proto.Defa
 
 	logger.Info(req.GetId(), "Crypto upvote successful")
 
+	// Set cache in Redis
+	err = rds.Set(crypto.Id.Hex(), crypto, rds.YesDeleteAll)
+	if err != nil {
+		logger.Error(req.GetId(), "Error to set cache in redis: "+err.Error())
+	}
+
 	go SetObserver(req.GetId())
 	return &responseMessage, nil
 }
@@ -265,7 +369,11 @@ func (a *AppServer) Downvote(ctx context.Context, req *proto.VoteReq) (*proto.De
 		return &responseMessage, status.Errorf(3, err.Error())
 	}
 
-	objId, _ := primitive.ObjectIDFromHex(req.GetId())
+	objId, err := primitive.ObjectIDFromHex(req.GetId())
+	if err != nil {
+		return &responseMessage, status.Errorf(3, err.Error())
+	}
+
 	crypto := models.CryptoCurrency{
 		Id:         objId,
 		UpdateType: models.DownVote,
@@ -277,8 +385,9 @@ func (a *AppServer) Downvote(ctx context.Context, req *proto.VoteReq) (*proto.De
 		return &responseMessage, status.Errorf(13, err.Error())
 	}
 
+	crypto, errGet := db.GetById(a.Database, crypto.Id)
+
 	if matchedCount == 0 {
-		_, errGet := db.GetById(a.Database, crypto.Id)
 		// Verifying reason to mathedCount == 0 maybe crypto not exists
 		if errGet != nil {
 			logger.Error(req.GetId(), "Downvote error: "+errGet.Error())
@@ -292,6 +401,12 @@ func (a *AppServer) Downvote(ctx context.Context, req *proto.VoteReq) (*proto.De
 
 	responseMessage.Message = "registered downvote successful"
 	logger.Info(req.GetId(), "Crypto downvote successful")
+
+	// Set cache in Redis
+	err = rds.Set(crypto.Id.Hex(), crypto, rds.YesDeleteAll)
+	if err != nil {
+		logger.Error(req.GetId(), "Error to set cache in redis: "+err.Error())
+	}
 
 	go SetObserver(req.GetId())
 	return &responseMessage, nil
@@ -312,7 +427,11 @@ func (a *AppServer) MonitorVotes(req *proto.MonitorVotesReq, stream proto.EndPoi
 
 		if cryptoUpdatedId == req.GetId() {
 
-			objId, _ := primitive.ObjectIDFromHex(cryptoUpdatedId)
+			objId, err := primitive.ObjectIDFromHex(cryptoUpdatedId)
+			if err != nil {
+				return err
+			}
+
 			cryptoFound, err := db.GetById(a.Database, objId)
 			if err != nil {
 				logger.Error(req.GetId(), "Error to stram crypto: "+err.Error())
@@ -339,7 +458,10 @@ func (a *AppServer) MonitorVotes(req *proto.MonitorVotesReq, stream proto.EndPoi
 				return err
 			}
 
-			out, _ := json.Marshal(streamCrypto)
+			out, err := json.Marshal(streamCrypto)
+			if err != nil {
+				logger.Error(req.GetId(), err.Error())
+			}
 			logger.Info(req.GetId(), "Streaming in Crypto "+string(out))
 		}
 	}

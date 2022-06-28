@@ -15,7 +15,7 @@ var logger = &helpers.Log{}
 func getURI() string {
 	err := godotenv.Load()
 	if err != nil {
-		panic(err)
+		logger.Fatal("MONGODB", "", err)
 	}
 	// Cluster
 	// URI := "mongodb+srv://" + os.Getenv("MONGODB_USER") + ":" + os.Getenv("MONGODB_PASS") + "@clusterapi.t6vp0.mongodb.net/?retryWrites=true&w=majority"

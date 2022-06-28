@@ -33,6 +33,12 @@ To requests, I recommend use of client [BloomRPC](https://github.com/bloomrpc/bl
 
 _Remember to import the ``proto/service.proto`` file in your client_
 
+## Requirements
+ * MongoDB
+ * Mongo Express
+ * Redis
+ * Golang
+
 ## Default Config
 > - Ports:
 >
@@ -43,6 +49,8 @@ _Remember to import the ``proto/service.proto`` file in your client_
 >       - Mongo: 27017->27017
 >
 >       - Mongo-Express: 8081->9000
+>
+>       - Redis: 6379->6379
 
 ___
 ## Problems?

@@ -14,6 +14,10 @@ var NoDeleteAll = false
 var PrefixDeleteAll = "ListAll"
 var nameLog = "REDIS"
 
+// Cache são criados em todas as operações do controller (exceto exclusao de crypto)
+// Toda vez que é realizada uma operação de criação/edição,
+// o cache de ListAll é apagado, evitando assim um cache desatualizado.
+
 func Connect() *redis.Client {
 	rdb := redis.NewClient(&redis.Options{
 		Addr:     "localhost:6379",
